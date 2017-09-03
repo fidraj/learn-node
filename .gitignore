@@ -1,3 +1,5 @@
 node_modules
 .vscode
 variables.env
+public/uploads
+*.DS_Store
