@@ -80,4 +80,37 @@ storeSchema.virtual('reviews', {
 	foreignField: 'store'
 });
 
+storeSchema.statics.getTopStores = function () {
+    return this.aggregate([
+       { 
+           $lookup: { 
+           from: 'reviews',
+           localField: '_id',
+           foreignField: 'store',
+           as: 'reviews' 
+        }},
+        { 
+            $match: {
+            'reviews.1': {
+                $exists: true
+            }
+        }},
+        {
+            $addField: {
+                averageRating: {
+                    $avg: '$reviews.rating'
+                }
+            }
+        },
+        {
+            $sort: {
+                averageRating: -1
+            }
+        },
+        {
+            $limit: 10
+        }
+    ]);
+}
+
 module.exports = mongoose.model('Store', storeSchema);
